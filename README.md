@@ -1,6 +1,6 @@
 # keycloak-ldap-grafana-cloudflare
 
-![graph](https://res.cloudinary.com/ethzero/image/upload/v1735489103/misc/cloudflare-grafana-keycloak-activedirectory.png)
+![graph](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_1080,g_face/v1735489103/misc/cloudflare-grafana-keycloak-activedirectory.png)
 
 
 # Intro  
@@ -15,20 +15,20 @@ plus the usage of federation with MS active directory.
 
 ### MS active directory   
 --> installed as a virtual machine in vmware  
-![msad](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_400,g_face/v1735492319/misc/Screenshot_2024-12-29_at_16.43.25.png)     
+![msad](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_480,g_face/v1735492319/misc/Screenshot_2024-12-29_at_16.43.25.png)     
 
 ### Cloudflare   
 --> used as WAF and tunnel to avoid the exposure of public ip with cloudlared tunnel    
-![cloudflare](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_400,g_face/v1735492834/misc/Screenshot_2024-12-29_at_18.17.21.png)      
+![cloudflare](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_480,g_face/v1735492834/misc/Screenshot_2024-12-29_at_18.17.21.png)      
 
 ### Grafana   
 --> as a virtual machine with prometheus,influxdb and graphite   
-![grafana](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_400,g_face/v1735492317/misc/Screenshot_2024-12-29_at_16.33.10.png) 
+![grafana](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_480,g_face/v1735492317/misc/Screenshot_2024-12-29_at_16.33.10.png) 
 
 ### Keycloak   
 --> installed as a container in a single namespace with pgsql as well   
-![keycloak1](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_400,g_face/v1735493326/misc/Screenshot_2024-12-29_at_18.28.18.png)   
-![keycloak2](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_400,g_face/v1735492322/misc/Screenshot_2024-12-29_at_16.40.31.png)   
+![keycloak1](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_480,g_face/v1735493326/misc/Screenshot_2024-12-29_at_18.28.18.png)   
+![keycloak2](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_480,g_face/v1735492322/misc/Screenshot_2024-12-29_at_16.40.31.png)   
 
 
 
@@ -351,7 +351,23 @@ items:
 ```
 
 
-#### Configurations    
+#### Configurations  
+
+The options used in keycloak deployment are the ones that are working with the whole ecosystem  
+
+```KC_HOSTNAME_STRICT_BACKCHANNEL``` in combination with   
+```KC_HOSTNAME_URL``` , ```KC_HOSTNAME_ADMIN_URL``` to avoid this message  
+``` http://...' because it violates the following Content Security Policy directive: "frame-src 'self'"```   
+
+The other option **mandatory** are related to the ```Client ID```	for **account** and **account-console**
+**Web origins** must be set to **"*"** , this will avoid 403 access with load loop  
+
+
+Full grafana client configuration below   
+
+![keycloak3](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_720,g_face/v1735499577/misc/screencapture-auth-k8s-it-admin-master-console-2024-12-29-20_11_51.png)
+![keycloak4](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_720,g_face/v1735499572/misc/Screenshot_2024-12-29_at_20.12.24.png)
+![keycloak5](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_720,g_face/v1735499572/misc/Screenshot_2024-12-29_at_20.12.32.png)
 
 
 
