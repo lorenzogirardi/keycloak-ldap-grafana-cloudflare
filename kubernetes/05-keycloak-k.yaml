@@ -31,6 +31,20 @@ spec:
       labels:
         app: keycloak
     spec:
+      volumes:
+        - name: providers-volume
+          emptyDir: {}
+      initContainers:
+        - name: init-k-metrics-spi
+          image: lgirardi/init-k-metrics-spi:0.1
+          command: ["/bin/sh", "-c"]
+          args:
+            - >
+              echo "Copying keycloak-metrics-spi.jar to shared volume...";
+              cp /tmp/keycloak-metrics-spi.jar /providers/;
+          volumeMounts:
+            - name: providers-volume
+              mountPath: /providers
       containers:
       - name: keycloak
         image: quay.io/keycloak/keycloak:24.0
@@ -85,6 +99,9 @@ spec:
             secretKeyRef:
               name: postgres-credentials
               key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: providers-volume
+          mountPath: /opt/keycloak/providers
         ports:
         - name: http
           containerPort: 8080
