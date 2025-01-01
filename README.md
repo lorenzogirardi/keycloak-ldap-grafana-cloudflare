@@ -7,7 +7,7 @@
 
 So... keycloak gave me the opportunity to play with multiple components in my infrastructure,  
 the following will not just keycloak installation but how this component will work having   
-an origin lockdown with cloudflare tunnel that work L7 , plus the kbernetes cluster where keycloak, pgsql and cloudflared are installed,  
+an origin lockdown with cloudflare tunnel that work L7 , plus the kubernetes cluster where keycloak, pgsql and cloudflared are installed,  
 plus the usage of federation with MS active directory.  
 
 
@@ -47,7 +47,7 @@ plus the usage of federation with MS active directory.
 ``` 
 
 Since cloudflared (aka tunnel) is acting also as a ingress/reverseproxy to connect an internal endpoint with Cloudflare edges,  
-fist of all we have to expose the new domain that will be used by keycloak.  
+first of all we have to expose the new domain that will be used by keycloak.  
 Service itself inside kubernetes can be used directly or with the ingress,  
 in this scenario is used as an ingress since in the future i'd like to add internal and external domains for the installation.    
 
@@ -248,6 +248,20 @@ spec:
       labels:
         app: keycloak
     spec:
+      volumes:
+        - name: providers-volume
+          emptyDir: {}
+      initContainers:
+        - name: init-k-metrics-spi
+          image: lgirardi/init-k-metrics-spi:0.1
+          command: ["/bin/sh", "-c"]
+          args:
+            - >
+              echo "Copying keycloak-metrics-spi.jar to shared volume...";
+              cp /tmp/keycloak-metrics-spi.jar /providers/;
+          volumeMounts:
+            - name: providers-volume
+              mountPath: /providers
       containers:
       - name: keycloak
         image: quay.io/keycloak/keycloak:24.0
@@ -302,6 +316,9 @@ spec:
             secretKeyRef:
               name: postgres-credentials
               key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: providers-volume
+          mountPath: /opt/keycloak/providers
         ports:
         - name: http
           containerPort: 8080
@@ -371,6 +388,10 @@ Full grafana client configuration below
 
 
 
+
+#### Metrics
+
+![metrics](https://res.cloudinary.com/ethzero/image/upload/c_thumb,w_720,g_face/v1735735151/metrics-keycloak_fxhdme.png)
 
 
 
